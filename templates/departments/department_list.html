@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Departments | University Course Directory{% endblock %}
+
+{% block content %}
+  <h1>Departments</h1>
+
+  <div class="list">
+    {% for department in departments %}
+      <section class="item">
+        <h2>{{ department.code }} - {{ department.name }}</h2>
+        <p class="muted">Building: {{ department.building_name }}</p>
+        <a href="{% url 'department_detail' department.id %}">View department details</a>
+      </section>
+    {% empty %}
+      <p>No departments have been added yet.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

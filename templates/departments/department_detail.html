@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}{{ department.name }} | University Course Directory{% endblock %}
+
+{% block content %}
+  <h1>{{ department.name }}</h1>
+  <p><strong>Code:</strong> {{ department.code }}</p>
+  <p><strong>Building:</strong> {{ department.building_name }}</p>
+  <p>{{ department.description }}</p>
+
+  <h2>Courses</h2>
+  <div class="list">
+    {% for course in courses %}
+      <section class="item">
+        <h3>{{ course.course_code }} - {{ course.title }}</h3>
+        <p class="muted">{{ course.credits }} credits, level {{ course.level }}</p>
+        <a href="{% url 'course_detail' course.id %}">View course details</a>
+      </section>
+    {% empty %}
+      <p>No courses have been added for this department yet.</p>
+    {% endfor %}
+  </div>
+{% endblock %}
