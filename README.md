@@ -14,11 +14,10 @@ Open:
 
 - Home: http://localhost:8000/
 - Departments: http://localhost:8000/departments/
+- Courses: http://localhost:8000/courses/
 - Admin: http://localhost:8000/admin/
 
 ## Create migrations
-
-Complete the `Student` model in `students/models.py` first, then run:
 
 ```bash
 docker compose run --rm web python manage.py makemigrations
@@ -49,5 +48,6 @@ Use the admin panel to create at least:
 - `/` - Home page
 - `/departments/` - Department list page
 - `/departments/<id>/` - Department detail page
+- `/courses/` - Course list page
 - `/courses/<id>/` - Course detail page
 - `/admin/` - Django admin panel
