@@ -43,6 +43,12 @@ Use the admin panel to create at least:
 - 6 courses
 - 5 students
 
+The project has been tested with sample records for:
+
+- Computer Science, Mathematics, and Biology departments
+- Six courses across those departments
+- Five student records connected to major courses
+
 ## Pages
 
 - `/` - Home page
@@ -51,3 +57,16 @@ Use the admin panel to create at least:
 - `/courses/` - Course list page
 - `/courses/<id>/` - Course detail page
 - `/admin/` - Django admin panel
+
+## Verification
+
+The Docker setup was verified with:
+
+```bash
+docker compose up --build
+docker compose exec web python manage.py migrate
+docker compose exec web python manage.py check
+```
+
+The home page, department list, department detail, course list, course detail,
+and admin login page were checked locally at `http://localhost:8000/`.
