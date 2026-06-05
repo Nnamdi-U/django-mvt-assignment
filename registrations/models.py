@@ -42,3 +42,14 @@ class Enrollment(models.Model):
 
     def __str__(self):
         return f"{self.student.full_name} - {self.course.course_code}"
+
+
+class AuditLog(models.Model):
+    action = models.CharField(max_length=100)
+    model_name = models.CharField(max_length=100)
+    object_id = models.PositiveIntegerField(null=True, blank=True)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.action} - {self.model_name} - {self.created_at}"
