@@ -22,3 +22,16 @@ class CourseSerializer(serializers.ModelSerializer):
             "level",
             "is_active",
         ]
+
+    def validate_credits(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Credits must be greater than 0.")
+        return value
+
+    def validate_level(self, value):
+        allowed_levels = [100, 200, 300, 400, 500]
+        if value not in allowed_levels:
+            raise serializers.ValidationError(
+                "Level must be 100, 200, 300, 400, or 500."
+            )
+        return value

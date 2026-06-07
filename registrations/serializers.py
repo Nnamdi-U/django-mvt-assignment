@@ -29,6 +29,32 @@ class EnrollmentSerializer(serializers.ModelSerializer):
             "status",
             "enrolled_at",
         ]
+        validators = []
+
+    def validate(self, data):
+        student = data.get("student", getattr(self.instance, "student", None))
+        course = data.get("course", getattr(self.instance, "course", None))
+
+        course_is_changing = self.instance is None or "course" in data
+        if course_is_changing and course and not course.is_active:
+            raise serializers.ValidationError(
+                {"course": "Students cannot enroll in an inactive course."}
+            )
+
+        if student and course:
+            duplicate = Enrollment.objects.filter(
+                student=student,
+                course=course,
+            )
+            if self.instance:
+                duplicate = duplicate.exclude(pk=self.instance.pk)
+
+            if duplicate.exists():
+                raise serializers.ValidationError(
+                    "This student is already enrolled in this course."
+                )
+
+        return data
 
 
 class AuditLogSerializer(serializers.ModelSerializer):
