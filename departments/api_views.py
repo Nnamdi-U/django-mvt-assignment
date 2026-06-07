@@ -9,6 +9,8 @@ class DepartmentViewSet(ModelViewSet):
     queryset = Department.objects.all().order_by("id")
     serializer_class = DepartmentSerializer
     permission_classes = [AllowAny]
+    search_fields = ["name", "code"]
+    ordering_fields = ["name", "code"]
 
     def get_serializer_class(self):
         if self.action == "retrieve":

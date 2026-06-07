@@ -9,9 +9,18 @@ class EnrollmentViewSet(ModelViewSet):
     queryset = Enrollment.objects.select_related("student", "course").order_by("id")
     serializer_class = EnrollmentSerializer
     permission_classes = [AllowAny]
+    filterset_fields = ["student", "course", "status"]
+    search_fields = [
+        "student__full_name",
+        "student__student_number",
+        "course__course_code",
+    ]
+    ordering_fields = ["enrolled_at"]
 
 
 class AuditLogViewSet(ReadOnlyModelViewSet):
     queryset = AuditLog.objects.all().order_by("-created_at")
     serializer_class = AuditLogSerializer
     permission_classes = [AllowAny]
+    filterset_fields = ["action", "model_name"]
+    ordering_fields = ["created_at"]
