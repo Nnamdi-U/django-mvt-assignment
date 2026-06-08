@@ -20,7 +20,7 @@ INSTALLED_APPS = [
     "departments",
     "courses",
     "students",
-    "registrations",
+    "registrations.apps.RegistrationsConfig",
 ]
 
 MIDDLEWARE = [
