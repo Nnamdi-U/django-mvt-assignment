@@ -1,92 +1,44 @@
-# API Test Results
+# API Testing Notes
 
-Date tested: June 8, 2026
+I tested the API on June 8, 2026 using Docker and curl.
 
-The API was tested locally with Docker, PostgreSQL, and `curl`.
+## Departments
 
-```bash
-docker compose up --build
-docker compose exec web python manage.py migrate
-```
+- `GET /api/departments/` returned 200.
+- `POST /api/departments/` created a department and returned 201.
+- `GET /api/departments/<id>/` returned the department and its courses.
 
-## Results
+## Courses
 
-| Test | Request | Expected | Actual |
-| --- | --- | --- | --- |
-| Department list | `GET /api/departments/` | 200 | 200 |
-| Create department | `POST /api/departments/` | 201 | 201 |
-| Department detail | `GET /api/departments/12/` | 200 | 200 |
-| Create active course | `POST /api/courses/` | 201 | 201 |
-| Create inactive course | `POST /api/courses/` | 201 | 201 |
-| Course list | `GET /api/courses/` | 200 | 200 |
-| Filter courses | `GET /api/courses/?department=12` | 200 | 200 |
-| Search courses | `GET /api/courses/?search=Programming%20Test%20232408` | 200 | 200 |
-| Course detail | `GET /api/courses/16/` | 200 | 200 |
-| Reject zero credits | `POST /api/courses/` | 400 | 400 |
-| Reject invalid level | `POST /api/courses/` | 400 | 400 |
-| Patch course | `PATCH /api/courses/16/` | 200 | 200 |
-| Create student | `POST /api/students/` | 201 | 201 |
-| Student list | `GET /api/students/` | 200 | 200 |
-| Search students | `GET /api/students/?search=S232408` | 200 | 200 |
-| Student detail | `GET /api/students/11/` | 200 | 200 |
-| Reject duplicate email | `POST /api/students/` | 400 | 400 |
-| Patch student | `PATCH /api/students/11/` | 200 | 200 |
-| Create enrollment | `POST /api/enrollments/` | 201 | 201 |
-| Enrollment list | `GET /api/enrollments/` | 200 | 200 |
-| Enrollment detail | `GET /api/enrollments/5/` | 200 | 200 |
-| Reject duplicate enrollment | `POST /api/enrollments/` | 400 | 400 |
-| Reject inactive course | `POST /api/enrollments/` | 400 | 400 |
-| Patch enrollment status | `PATCH /api/enrollments/5/` | 200 | 200 |
-| Audit log list | `GET /api/audit-logs/?action=enrollment_created` | 200 | 200 |
-| Audit log detail | `GET /api/audit-logs/7/` | 200 | 200 |
-| Reject audit log creation | `POST /api/audit-logs/` | 405 | 405 |
+- `GET /api/courses/` returned 200 and used pagination.
+- Filtering by department returned only courses from that department.
+- Searching for a course title returned the matching course.
+- `POST /api/courses/` returned 201 for valid course data.
+- `PATCH /api/courses/<id>/` updated the course.
 
-All tests passed. The IDs above belonged to temporary test records. The department,
-courses, student, and enrollment were deleted after the test.
+I also tested invalid course data:
 
-## Response Examples
+- Credits set to `0` returned 400 with `Credits must be greater than 0.`
+- Level set to `999` returned 400 with
+  `Level must be 100, 200, 300, 400, or 500.`
 
-Course list pagination fields:
+## Students
 
-```json
-{
-  "count": 8,
-  "next": "http://localhost:8000/api/courses/?page=2",
-  "previous": null
-}
-```
+- `GET /api/students/` returned 200.
+- Searching by student number returned the correct student.
+- `POST /api/students/` returned 201 for valid student data.
+- `PATCH /api/students/<id>/` updated the enrollment year.
+- Reusing the same email returned 400 because email must be unique.
 
-Course with zero credits:
+## Enrollments
 
-```json
-{
-  "credits": [
-    "Credits must be greater than 0."
-  ]
-}
-```
+- `GET /api/enrollments/` returned 200.
+- `POST /api/enrollments/` created an enrollment and returned 201.
+- `PATCH /api/enrollments/<id>/` changed the status to completed.
+- Posting the same student and course again returned 400.
+- Trying to enroll in an inactive course returned 400.
 
-Course with an invalid level:
-
-```json
-{
-  "level": [
-    "Level must be 100, 200, 300, 400, or 500."
-  ]
-}
-```
-
-Duplicate student email:
-
-```json
-{
-  "email": [
-    "student with this email already exists."
-  ]
-}
-```
-
-Duplicate enrollment:
+Duplicate enrollment response:
 
 ```json
 {
@@ -96,7 +48,7 @@ Duplicate enrollment:
 }
 ```
 
-Inactive course enrollment:
+Inactive course response:
 
 ```json
 {
@@ -106,22 +58,19 @@ Inactive course enrollment:
 }
 ```
 
-Audit log created by the enrollment signal:
+## Audit Logs
 
-```json
-{
-  "id": 7,
-  "action": "enrollment_created",
-  "model_name": "Enrollment",
-  "object_id": 5,
-  "message": "Student S232408 enrolled in P232408."
-}
+After creating courses, students, and enrollments, I checked:
+
+```text
+GET /api/audit-logs/
 ```
 
-Manual audit log creation:
+The API contained automatically created logs. The enrollment log included the
+student number and course code.
 
-```json
-{
-  "detail": "Method \"POST\" not allowed."
-}
-```
+I also tried `POST /api/audit-logs/`. It returned 405 because audit logs are
+read-only through the API.
+
+The temporary department, courses, student, and enrollment used during testing
+were deleted after the tests.
