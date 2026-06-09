@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
@@ -16,6 +17,10 @@ class EnrollmentViewSet(ModelViewSet):
         "course__course_code",
     ]
     ordering_fields = ["enrolled_at"]
+
+    def perform_create(self, serializer):
+        with transaction.atomic():
+            serializer.save()
 
 
 class AuditLogViewSet(ReadOnlyModelViewSet):
